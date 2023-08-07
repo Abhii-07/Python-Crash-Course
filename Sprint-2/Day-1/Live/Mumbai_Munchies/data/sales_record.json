@@ -1,0 +1,17 @@
+[
+    {
+        "snack_id": "101",
+        "date": "2023-08-07",
+        "quantity_sold": 2
+    },
+    {
+        "snack_id": "102",
+        "date": "2023-08-07",
+        "quantity_sold": 1
+    },
+    {
+        "snack_id": "103",
+        "date": "2023-08-07",
+        "quantity_sold": 3
+    }
+]

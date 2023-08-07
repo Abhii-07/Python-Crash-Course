@@ -1,0 +1,22 @@
+{
+    "101": {
+        "name": "Chips",
+        "price": 15,
+        "quantity": 10
+    },
+    "102": {
+        "name": "Soda",
+        "price": 20,
+        "quantity": 3
+    },
+    "109": {
+        "name": "Vada_Pav",
+        "price": 20.0,
+        "quantity": 1
+    },
+    "107": {
+        "name": "Samosa",
+        "price": 30.0,
+        "quantity": 2
+    }
+}
