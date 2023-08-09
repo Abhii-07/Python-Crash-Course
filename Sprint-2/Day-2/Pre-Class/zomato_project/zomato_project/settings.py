@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-qmihs(7343mhgyqap7v=bzbmld=&vw+jzs6fq8uh#1b-63300@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# vercel_app/settings.py
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 
 # Application definition
@@ -78,7 +79,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
-WSGI_APPLICATION = 'zomato_project.wsgi.application'
+# vercel_app/settings.py
+WSGI_APPLICATION = 'vercel_app.wsgi.app'
 
 
 # Database
