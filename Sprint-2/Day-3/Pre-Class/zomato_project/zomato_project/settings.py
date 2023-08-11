@@ -86,15 +86,10 @@ WSGI_APPLICATION = 'zomato_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'zomato_app',  # Replace with your desired database name
-        'USER': 'root',  # Replace with your MySQL username
-        'PASSWORD': 'root',  # Replace with your MySQL password
-        'HOST': 'localhost',  # Use 'localhost' if MySQL is running locally
-        'PORT': '3306',  # Default MySQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 
 # Password validation

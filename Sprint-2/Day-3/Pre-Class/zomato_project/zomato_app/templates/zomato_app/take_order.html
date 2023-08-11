@@ -115,18 +115,17 @@
         <label for="customer_name">Customer Name:</label>
         <input type="text" name="customer_name" required><br>
         <div class="menu-carousel">
-            {% for dish in menu %}
+            {% for id, dish in menu.items %}
             <div class="menu-card">
                 <h2>{{ dish.name }}</h2>
                 <p>Price: ₹{{ dish.price }}</p>
                 <label>
-                    <input type="checkbox" name="selected_dishes" value="{{ dish.id }}">
+                    <input type="checkbox" name="selected_dishes" value="{{ id }}">
                     Select
                 </label>
             </div>
             {% endfor %}
         </div>
-        
         <button id="submit-btn" type="submit">Place Order</button>
     </form>
 </body>
