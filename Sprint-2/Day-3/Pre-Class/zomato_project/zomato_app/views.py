@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect
 from .models import Dish, Order
 
 def home_view(request):
-    context = {}  # You can add any necessary context here
+    context = {}  
     return render(request, 'zomato_app/home.html', context)
 
 def menu_view(request):
     menu = Dish.objects.all()
-    print("Menu Items:", menu)  # Print menu items for debugging
+    print("Menu Items:", menu)  
     context = {'menu': menu}
     return render(request, 'zomato_app/menu.html', context)
 
@@ -23,7 +23,6 @@ def add_dish(request):
         return redirect('menu')
     return render(request, 'zomato_app/add_dish.html')
 
-# ... Other functions ...
 
 
 def remove_dish(request, dish_id):
@@ -31,7 +30,7 @@ def remove_dish(request, dish_id):
         dish = Dish.objects.get(pk=dish_id)
         dish.delete()
     except Dish.DoesNotExist:
-        pass  # Handle the case where the dish doesn't exist
+        pass  
     return redirect('menu')
 
 def update_availability(request, dish_id):
@@ -40,25 +39,40 @@ def update_availability(request, dish_id):
         dish.availability = not dish.availability
         dish.save()
     except Dish.DoesNotExist:
-        pass  # Handle the case where the dish doesn't exist
+        pass  
     return redirect('menu')
 
 def take_order(request):
     if request.method == 'POST':
         order = Order.objects.create(customer_name=request.POST['customer_name'])
+
+        # Calculate the total amount
+        total_amount = 0
         selected_dishes = request.POST.getlist('selected_dishes')
         for dish_id in selected_dishes:
             try:
                 selected_dish = Dish.objects.get(pk=dish_id, availability=True)
                 order.dishes.add(selected_dish)
+                total_amount += selected_dish.price
             except Dish.DoesNotExist:
                 context['error_message'] = "Invalid or unavailable dish selected."
                 return render(request, 'zomato_app/take_order.html', context)
+
+        # Calculate the final amount including taxes (for example, adding 10% tax)
+        tax_percentage = 10
+        tax_amount = (total_amount * tax_percentage) / 100
+        final_amount = total_amount + tax_amount
+
+        
+        order.final_amount = final_amount
+        order.save()
+
         return redirect('review_orders')
-    
+
     menu = Dish.objects.filter(availability=True)
     context = {'menu': menu}
     return render(request, 'zomato_app/take_order.html', context)
+
 
 
 def update_order_status(request, order_id):
@@ -69,17 +83,17 @@ def update_order_status(request, order_id):
             order.status = new_status
             order.save()
     except Order.DoesNotExist:
-        pass  # Handle the case where the order doesn't exist
+        pass  
     return redirect('review_orders')
 
 def review_orders(request):
     orders = Order.objects.all()
     context = {'orders': orders}
-    print("orders Items:", orders)  # Print menu items for debugging
+    print("orders Items:", orders)  
     return render(request, 'zomato_app/review_orders.html', context)
 
 
 def exit_system(request):
     global orders
-    orders = {}  # Clear orders when exiting
+    orders = {}  
     return redirect('menu')

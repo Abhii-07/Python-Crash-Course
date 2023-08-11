@@ -103,7 +103,6 @@
             <a href="{% url 'add_dish' %}">Add Dish</a>
             <a href="{% url 'take_order' %}">Take Order</a>
             <a href="{% url 'review_orders' %}">Review Orders</a>
-            <!--  <a href="{% url 'exit_system' %}">Exit</a> -->
         </div>
     </div>
     <h1>Take Order</h1>
@@ -120,15 +119,55 @@
                 <h2>{{ dish.name }}</h2>
                 <p>Price: ₹{{ dish.price }}</p>
                 <label>
-                    <input type="checkbox" name="selected_dishes" value="{{ dish.id }}">
+                    <input type="checkbox" name="selected_dishes" value="{{ id }}" data-price="{{ dish.price }}">
                     Select
                 </label>
             </div>
             {% endfor %}
         </div>
-        
+        <div class="order-summary">
+            <p>Total Price: ₹{{ total_price }}</p>
+            <p>Taxes (10%): ₹{{ taxes }}</p>
+            <p><strong>Final Amoun: ₹{{ final_amount }}</strong></p>
+        </div>
         <button id="submit-btn" type="submit">Place Order</button>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectedDishes = document.querySelectorAll('input[name="selected_dishes"]');
+            const totalPriceElement = document.getElementById('total-price');
+            const taxesElement = document.getElementById('taxes');
+            const finalAmountElement = document.getElementById('final-amount');
+            const taxPercentage = 10; // 10% tax
+    
+            selectedDishes.forEach(dishInput => {
+                dishInput.addEventListener('change', () => {
+                    updateAmounts();
+                });
+            });
+    
+            function updateAmounts() {
+                let totalPrice = 0;
+    
+                selectedDishes.forEach(dishInput => {
+                    if (dishInput.checked) {
+                        const dishPrice = parseFloat(dishInput.dataset.price);
+                        totalPrice += dishPrice;
+                    }
+                });
+    
+                const taxes = (totalPrice * taxPercentage) / 100;
+                const finalAmount = totalPrice + taxes;
+    
+                totalPriceElement.textContent = totalPrice.toFixed(2);
+                taxesElement.textContent = taxes.toFixed(2);
+                finalAmountElement.textContent = finalAmount.toFixed(2);
+            }
+    
+            updateAmounts(); // Initialize amounts on page load
+        });
+    </script>
+    
 </body>
 
 </html>

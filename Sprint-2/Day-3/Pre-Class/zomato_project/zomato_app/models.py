@@ -11,5 +11,7 @@ class Dish(models.Model):
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
     customer_name = models.CharField(max_length=100)
-    status = models.CharField(max_length=50, default='received')
+    status = models.CharField(max_length=50, default='Received')
     dishes = models.ManyToManyField(Dish)
+    final_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
