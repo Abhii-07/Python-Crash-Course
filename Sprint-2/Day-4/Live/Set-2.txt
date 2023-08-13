@@ -1,0 +1,99 @@
+// Problem 1: Creating a Restaurants collection:
+db.createCollection("Restaurants", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "cuisine_type", "location", "average_rating","delivery_available"],
+      properties: {
+        name: { bsonType: "string" },
+        cuisine_type: { bsonType: "string" },
+        location: { bsonType: "string" },
+        average_rating: { bsonType: "double" },
+        delivery_available: { bsonType: "bool" }
+      }
+    }
+  }
+})
+
+// Problem 17:Problem**: Insert five rows / documents into the 
+db.Restaurants.insertMany([
+  {
+    name: "Hotel 1",
+    cuisine_type: "French",
+    location: "Pune",
+    average_rating: 4.5,
+    delivery_available: true
+  },
+  {
+    name: "Hotel 2",
+    cuisine_type: "Chinese",
+    location: "Mumbai",
+    average_rating: 3.8,
+    delivery_available: false
+  },
+  {
+    name: "Hotel 3",
+    cuisine_type: "Indian",
+    location: "Delhi",
+    average_rating: 4.2,
+    delivery_available: true
+  },
+  {
+    name: "Hotel 4",
+    cuisine_type: "Japanese",
+    location: "New York",
+    average_rating: 3.5,
+    delivery_available: true
+  },
+  {
+    name: "Hotel 5",
+    cuisine_type: "Spanish",
+    location: "Punjab",
+    average_rating: 4.5,
+    delivery_available: true
+  }
+]);
+
+// Solve here
+
+db.Restaurants.find().sort({ average_rating: -1 }).limit(5);
+
+
+
+// ************************************************************************************************************************
+// db.Restaurants.find().sort({ average_rating: -1 });
+
+
+// Problem 19: Write a query to fetch all restaurants that offer delivery_available and have an average_rating of more than 4.
+// db.Restaurants.find({
+//   delivery_available: true,
+//   average_rating: { $gte: 4.5 }
+// });
+
+
+
+// Problem 20: Write a query to fetch all restaurants where the cuisine_type field is not set or is null.
+// db.Restaurants.find({
+//   $or: [
+//     { cuisine_type: null },
+//     { cuisine_type: { $exists: false } }
+//   ]
+// });
+
+// Problem 21: Write a query to count the number of restaurants that have delivery_available.
+// db.Restaurants.countDocuments({ delivery_available: true });
+
+// Problem 22: Write a query to fetch all restaurants whose location contains 'New York'.
+// db.Restaurants.find({ location: "New York" });
+
+// Problem 23: Write a query to calculate the average average_rating of all restaurants.
+// db.Restaurants.aggregate([
+//   { $group: { _id: null, avgRating: { $avg: "$average_rating" } } }
+// ]);
+
+
+// Problem 24: Write a query to fetch the top 5 restaurants when ordered by average_rating in descending order.
+// db.Restaurants.find().sort({ average_rating: -1 }).limit(5);
+
+// Problem 25: Write a query to delete the restaurant with id 3
+// db.Restaurants.deleteOne({ _id: 3 });

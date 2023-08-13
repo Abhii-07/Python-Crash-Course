@@ -1,0 +1,134 @@
+// Problem 26: Creating a Rides collection in MongoDB:
+db.createCollection("Rides", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["driver_id", "passenger_id", "start_location", "end_location", "distance", "ride_time", "fare"],
+      properties: {
+        driver_id: { bsonType: "objectid" }, 
+        passenger_id: { bsonType: "objectid" }, 
+        start_location: { bsonType: "string" },
+        end_location: { bsonType: "string" },
+        distance: { bsonType: "double" },
+        ride_time: { bsonType: "double" },
+        fare: { bsonType: "double" }
+      }
+    }
+  }
+});
+
+
+
+// Problem 27: Inserting data into the Rides collection:
+
+db.Rides.insertMany([
+  {
+    driver_id: ObjectId("64d624dd865d9e5f9a1e0ef2"),
+    passenger_id: ObjectId("64d624dd865d9e5f9a1e0ef3"),
+    start_location: "Airport",
+    end_location: "City Center",
+    distance: 15.2,
+    ride_time: 35,
+    fare: 20.50
+  },
+  {
+    driver_id: ObjectId("64d624dd865d9e5f9a1e0ef4"),
+    passenger_id: ObjectId("64d624dd865d9e5f9a1e0ef5"),
+    start_location: "Suburbia",
+    end_location: "Shopping Mall",
+    distance: 8.7,
+    ride_time: 20,
+    fare: 12.25
+  },
+  {
+    driver_id: ObjectId("64d624dd865d9e5f9a1e0ef6"),
+    passenger_id: ObjectId("64d624dd865d9e5f9a1e0ef7"),
+    start_location: "Downtown",
+    end_location: "Park",
+    distance: 3.0,
+    ride_time: 10,
+    fare: 8.00
+  },
+  {
+    driver_id: ObjectId("64d624dd865d9e5f9a1e0ef8"),
+    passenger_id: ObjectId("64d624dd865d9e5f9a1e0ef9"),
+    start_location: "City Center",
+    end_location: "Beach",
+    distance: 12.5,
+    ride_time: 30,
+    fare: 18.75
+  },
+  {
+    driver_id: ObjectId("64d624dd865d9e5f9a1e0efa"),
+    passenger_id: ObjectId("64d624dd865d9e5f9a1e0efb"),
+    start_location: "Suburbia",
+    end_location: "Restaurant",
+    distance: 5.0,
+    ride_time: 15,
+    fare: 10.00
+  }
+]);
+
+
+db.Rides.find().sort({ fare: -1 });
+
+
+// ***********************************************************************************************************************
+
+// Problem 28: Fetching all rides ordered by fare:
+// db.Rides.find().sort({ fare: -1 });
+
+
+// // Problem 29: Calculating total distance and fare for all rides:
+// db.Rides.aggregate([
+//   {
+//     $group: {
+//       _id: null,
+//       total_distance: { $sum: "$distance" },
+//       total_fare: { $sum: "$fare" }
+//     }
+//   }
+// ]);
+
+
+// // Problem 30: Calculating average ride time:
+// db.Rides.aggregate([
+//   {
+//     $group: {
+//       _id: null,
+//       average_ride_time: { $avg: "$ride_time" }
+//     }
+//   }
+// ]);
+
+
+// // Problem 31: Fetching rides with 'Downtown' in start or end location:
+// db.Rides.find({
+//   $or: [
+//     { start_location: /Downtown/ },
+//     { end_location: /Downtown/ }
+//   ]
+// });
+
+
+// // Problem 32: Counting rides for a specific driver_id:
+// db.Rides.countDocuments({ driver_id: ObjectId("64d624dd865d9e5f9a1e0ef0") });
+
+
+// // Problem 33: Updating fare of ride with id 4:
+// db.Rides.updateOne({ _id: 4 }, { $set: { fare: 18.50 } });
+
+
+// // Problem 34: Calculating total fare for each driver_id:
+// db.Rides.aggregate([
+//   {
+//     $group: {
+//       _id: "$driver_id",
+//       total_fare: { $sum: "$fare" }
+//     }
+//   }
+// ]);
+
+
+// // Problem 35: Deleting ride with id 2:
+// db.Rides.deleteOne({ _id: 2 });

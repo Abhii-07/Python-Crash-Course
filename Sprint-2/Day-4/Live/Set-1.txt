@@ -1,0 +1,109 @@
+// Problem 1: Creating a Customers collection:
+db.createCollection("Customers", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "email", "address", "phone_number"],
+      properties: {
+        name: { bsonType: "string" },
+        email: { bsonType: "string" },
+        address: { bsonType: "string" },
+        phone_number: { bsonType: "string" }
+      }
+    }
+  }
+})
+
+
+// Problem 2: Inserting data into Customers collection:
+db.Customers.insertMany([
+  {
+    name: "Abhijeet",
+    email: "abhi@example.com",
+    address: "Pune",
+    phone_number: "1234567890"
+  },
+  {
+    name: "Rishi",
+    email: "rishi@example.com",
+    address: "Pune",
+    phone_number: "1234457890"
+  },
+  {
+    name: "Raj",
+    email: "raj@example.com",
+    address: "Mumbai",
+    phone_number: "9974567890"
+  },
+  {
+    name: "Karan",
+    email: "karan@example.com",
+    address: "Delhi",
+    phone_number: "9955675432"
+  },
+  {
+    name: "Viraj",
+    email: "viraj@example.com",
+    address: "Chennai",
+    phone_number: "9900567843"
+  }
+]);
+
+db.Customers.find({});
+
+// *****************************************************************************************
+
+// Problem 3: Fetching all data from Customers collection:
+// db.Customers.find({});
+
+
+// // Problem 4: Selecting specific fields for all customers:
+// db.Customers.find({}, { name: 1, email: 1, _id: 0 });
+
+
+// // Problem 5: Fetching a customer by id:
+// db.Customers.find({ _id: '3' });
+
+
+// // Problem 6: Fetching customers with name starting with 'A':
+// db.Customers.find({ name: /^A/ });
+// db.Customers.find({ name: { $regex: '^a', $options: 'i' } });
+
+
+// // Problem 7: Fetching customers ordered by name in descending order:
+// db.Customers.createIndex({ name: 1 });
+// db.Customers.find().sort({ name: -1 });
+
+
+// // Problem 8: Updating customer's address:
+// db.Customers.updateOne(
+//   {  name: "Raj" },
+//   { $set: { address: "Kolkata" } }
+// );
+// db.Customers.find({});
+
+// // Problem 9: Fetching top 3 customers ordered by id in ascending order:
+// db.Customers.find().sort({ _id: 1 }).limit(3);
+
+
+// // Problem 10: Deleting a customer by id:
+// db.Customers.deleteOne({ _id: ObjectId("64d5fda8497a09a4b4bfa84e") });
+
+// // Problem 11: Counting the number of customers:
+// db.Customers.countDocuments({});
+
+
+// // Problem 12: Skipping rows in result:
+// db.Customers.find().sort({ _id: 1 }).skip(2);
+
+
+// // Problem 13: Fetching customers with specific conditions:
+// db.Customers.find({ $and: [ { _id: { $gt: 2 } }, { name: /^B/ } ] });
+
+
+// // Problem 14: Using OR conditions:
+// db.Customers.find({ $or: [ { _id: { $lt: 3 } }, { name: /s$/ } ] });
+
+
+// // Problem 15: Using NULL checks:
+// db.Customers.find({ $or: [ { phone_number: { $exists: false } }, { phone_number: null } ] });
