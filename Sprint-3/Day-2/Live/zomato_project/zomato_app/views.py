@@ -1,6 +1,10 @@
 from decimal import Decimal 
 from django.shortcuts import render, redirect
 from .models import Dish, Order
+# from openai import ChatCompletion
+import openai
+from django.shortcuts import render
+from django.http import HttpResponse
 
 def home_view(request):
     context = {}  
@@ -12,7 +16,8 @@ def menu_view(request):
     context = {'menu': menu}
     return render(request, 'zomato_app/menu.html', context)
 
-
+def support_page(request):
+    return render(request, 'zomato_app/support_page.html')
 
 def add_dish(request):
     if request.method == 'POST':
@@ -100,3 +105,52 @@ def exit_system(request):
     global orders
     orders = {}  
     return redirect('menu')
+
+
+# ChatBot
+
+
+
+# Set up your OpenAI API key (You should store this in an environment variable)
+OPENAI_API_KEY = "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"
+
+def chatbot_view(request):
+    conversation = request.session.get('conversation', [])
+
+    if request.method == 'POST':
+        user_input = request.POST.get('user_input')
+
+        # Sanitize and validate user input
+        if user_input:
+            user_input = user_input.strip()  # Remove leading and trailing spaces
+
+            # Append user input to the conversation
+            conversation.append({"role": "user", "content": user_input})
+
+            # Define your chatbot's predefined prompts
+            prompts = conversation.copy()
+
+            # Set up and invoke the GPT-3.5 Turbo model
+            openai.api_key = OPENAI_API_KEY
+            response = openai.Completion.create(
+                engine="gpt-3.5-turbo",  # GPT-3.5 Turbo model
+                prompt="\n".join([f"{message['role']}: {message['content']}" for message in prompts]),
+                temperature=0.7,  # Adjust as needed
+                max_tokens=100,  # Adjust as needed
+            )
+
+            # Extract chatbot replies from the response
+            chatbot_replies = [message['text'].strip() for message in response.choices]
+
+            # Append chatbot replies to the conversation
+            for reply in chatbot_replies:
+                conversation.append({"role": "assistant", "content": reply})
+
+            # Update the conversation in the session
+            request.session['conversation'] = conversation
+
+        return render(request, 'zomato_app/chatbot.html', {'user_input': user_input, 'chatbot_replies': chatbot_replies, 'conversation': conversation})
+
+    else:
+        request.session.clear()
+        return render(request, 'zomato_app/chatbot.html', {'conversation': conversation})
