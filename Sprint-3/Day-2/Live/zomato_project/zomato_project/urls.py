@@ -1,5 +1,5 @@
 """
-URL configuration for WeatherApp project.
+URL configuration for zomato_project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -19,6 +19,5 @@ from django.urls import path, include  # Import the include function
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('weather_api.urls')), 
-    path('', include('weather_api2.urls')), 
+    path('', include('zomato_app.urls')),  # Include the app's URL patterns
 ]
