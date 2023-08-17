@@ -1,10 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Dish, Order
 
-def home_view(request):
-    context = {}  
-    return render(request, 'zomato_app/home.html', context)
-
 def menu_view(request):
     menu = Dish.objects.all()
     print("Menu Items:", menu)  
@@ -97,3 +93,8 @@ def exit_system(request):
     global orders
     orders = {}  
     return redirect('menu')
+
+
+
+# ChatBot-Test:
+

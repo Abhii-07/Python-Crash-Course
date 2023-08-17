@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'zomato_app'
+    'zomato_app',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -69,7 +70,15 @@ TEMPLATES = [
     },
 ]
 
-# settings.py
+ASGI_APPLICATION = 'your_project.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        }
+    }
+
+
 
 # Static URL
 STATIC_URL = '/static/'
