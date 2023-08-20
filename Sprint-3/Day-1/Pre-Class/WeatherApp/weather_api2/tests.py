@@ -30,6 +30,6 @@ class WeatherAPITest(TestCase):
     def test_delete_weather_data(self):
         response = self.client.delete(reverse('weather_detail', kwargs={'city': 'Los Angeles'}))
         self.assertEqual(response.status_code, 204)
-        self.assertFalse('Los Angeles' in weather_data)
+        self.assertFalse('Los Angeles' in weather_data)  
 
 

@@ -41,6 +41,5 @@ class WeatherAPITest(TestCase):
                                    updated_weather_data, content_type='application/json')
         self.assertEqual(response.status_code, 404)
 
-    # Add more test cases as needed...
 
 
