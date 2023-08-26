@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions, Modal } from 'react-native';
-import { fetchDishes } from '../services/api'; // Import your API functions
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  Modal,
+  TextInput,
+  Button, // Import Button component
+} from 'react-native';
+import { fetchDishes, createDish } from '../services/api'; // Import your API functions
 import { Ionicons } from '@expo/vector-icons'; // Import an icon library, such as Ionicons
 
 const MenuScreen = ({ navigation }) => {
   const [dishes, setDishes] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAddDishModalVisible, setIsAddDishModalVisible] = useState(false);
+  const [newDishName, setNewDishName] = useState('');
+  const [newDishPrice, setNewDishPrice] = useState('');
 
   useEffect(() => {
     fetchDishes()
       .then((data) => {
-        console.log('Fetched Dishes:', data); // Log the fetched data to the console
-        setDishes(data); // Set the state with the fetched data
+        console.log('Fetched Dishes:', data);
+        setDishes(data);
       })
       .catch((error) => {
         console.error('Error fetching dishes:', error);
@@ -20,6 +33,33 @@ const MenuScreen = ({ navigation }) => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleAddDishModal = () => {
+    setIsAddDishModalVisible(!isAddDishModalVisible);
+  };
+
+  const handleAddDish = () => {
+    const dishData = {
+      name: newDishName,
+      price: parseFloat(newDishPrice),
+    };
+
+    createDish(dishData)
+      .then((response) => {
+        console.log('Dish added successfully:', response);
+        fetchDishes()
+          .then((data) => {
+            setDishes(data);
+          })
+          .catch((error) => {
+            console.error('Error refreshing dishes:', error);
+          });
+        toggleAddDishModal();
+      })
+      .catch((error) => {
+        console.error('Error adding dish:', error);
+      });
   };
 
   return (
@@ -38,7 +78,7 @@ const MenuScreen = ({ navigation }) => {
         <FlatList
           data={dishes}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2} // Number of columns in the grid
+          numColumns={2}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.dishItem}>
               <Text style={styles.dishName}>{item.name}</Text>
@@ -51,6 +91,49 @@ const MenuScreen = ({ navigation }) => {
         />
       </View>
 
+      {/* Button to open the Add Dish modal */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={toggleAddDishModal}
+      >
+        <Text style={styles.buttonText}>Add Dish</Text>
+      </TouchableOpacity>
+
+      {/* Modal for adding a new dish */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isAddDishModalVisible}
+        onRequestClose={toggleAddDishModal}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={toggleAddDishModal}
+          >
+            <Ionicons name="close" size={30} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Add Dish to Menu</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Dish Name"
+            value={newDishName}
+            onChangeText={(text) => setNewDishName(text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Dish Price"
+            keyboardType="numeric"
+            value={newDishPrice}
+            onChangeText={(text) => setNewDishPrice(text)}
+          />
+          <Button
+            title="Add Dish"
+            onPress={handleAddDish}
+          />
+        </View>
+      </Modal>
+
       {/* Dropdown Menu */}
       <Modal
         animationType="slide"
@@ -58,7 +141,7 @@ const MenuScreen = ({ navigation }) => {
         visible={isMenuOpen}
         onRequestClose={toggleMenu}
       >
-        <View style={styles.modalContainer}>
+        <View style={styles.menuContainer}>
           <TouchableOpacity
             style={styles.closeButton}
             onPress={toggleMenu}
@@ -80,7 +163,7 @@ const MenuScreen = ({ navigation }) => {
               style={styles.menuItem}
               onPress={() => {
                 toggleMenu();
-                navigation.navigate('OrderForm'); // Navigate to the 'Order' screen
+                navigation.navigate('OrderForm'); // Navigate to the 'OrderForm' screen
               }}
             >
               <Text style={styles.menuItemText}>Order</Text>
@@ -140,7 +223,7 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 5,
     borderRadius: 5,
-    width: windowWidth / 2 - 20, // Adjust based on the number of columns
+    width: windowWidth / 2 - 20,
   },
   dishName: {
     fontSize: 16,
@@ -157,21 +240,44 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'white',
   },
   closeButton: {
     alignItems: 'flex-end',
     paddingRight: 20,
+    backgroundColor: 'grey',
     paddingTop: 20,
   },
+  addButton: {
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+    margin: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  menuContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   menuItems: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 20,
   },
   menuItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },

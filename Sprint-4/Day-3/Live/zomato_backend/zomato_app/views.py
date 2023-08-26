@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Dish, Order
+from django.db.models import Sum
 from .serializers import DishSerializer, OrderSerializer
 
 # Views for rendering HTML pages
@@ -45,33 +46,46 @@ class DishUpdateAvailabilityView(generics.UpdateAPIView):
         dish_id = self.kwargs.get('dish_id')
         return get_object_or_404(Dish, pk=dish_id)
 
+
+
+# class OrderCreateView(generics.CreateAPIView):
+#     serializer_class = OrderSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         selected_dish_ids = request.data.get('selected_dishes', [])
+        
+#         # Use Django's Sum function to calculate the total amount
+#         total_amount = Dish.objects.filter(pk__in=selected_dish_ids).aggregate(total=Sum('price'))['total']
+        
+#         if total_amount is None:
+#             return Response({"error_message": "Invalid or unavailable dish selected."}, status=status.HTTP_400_BAD_REQUEST)
+
+#         order_data = {
+#             "customer_name": request.data.get("customer_name"),
+#             "final_amount": total_amount,
+#         }
+
+#         serializer = self.get_serializer(data=order_data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+        
+#         # Add the selected dishes to the order
+#         order = serializer.instance
+#         order.dishes.add(*selected_dish_ids)
+        
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 class OrderCreateView(generics.CreateAPIView):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     def create(self, request, *args, **kwargs):
-        selected_dishes = request.data.get('selected_dishes', [])
-        total_amount = Decimal('0.00')
-        selected_dish_objects = []
-
-        for dish_id in selected_dishes:
-            dish = get_object_or_404(Dish, pk=dish_id, availability=True)
-            selected_dish_objects.append(dish)
-            total_amount += dish.price
-
-        if not selected_dish_objects:
-            return Response({"error_message": "Invalid or unavailable dish selected."}, status=status.HTTP_400_BAD_REQUEST)
-
-        order_data = {
-            "customer_name": request.data.get("customer_name"),
-            "final_amount": total_amount,
-            "dishes": selected_dish_objects,
-        }
-
-        serializer = self.get_serializer(data=order_data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class OrderListView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

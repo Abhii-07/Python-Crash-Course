@@ -4,9 +4,10 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Modal,
+  TextInput,
+  Button, // Import Button from React Native
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchDishes, placeOrder } from '../services/api';
@@ -16,6 +17,8 @@ const OrderFormScreen = ({ navigation }) => {
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0); // Initialize totalAmount state
+
 
   useEffect(() => {
     // Fetch menu items when the component mounts
@@ -29,30 +32,30 @@ const OrderFormScreen = ({ navigation }) => {
   }, []);
 
   const handlePlaceOrder = () => {
+    if (!customerName.trim()) {
+      // Show an alert to the user
+      alert('Please enter your name before placing an order.');
+      return;
+    }
+  
     // Calculate the total amount based on selected dishes
     const totalAmount = selectedDishes.reduce((total, dish) => total + dish.price, 0);
-    const finalAmount = parseFloat(totalAmount);
   
-    // Prepare the data to be sent to the API
+    // Prepare the order data
     const orderData = {
       customer_name: customerName,
-      dishes: selectedDishes.map(dish => dish.id), // Send only dish IDs
-      // final_amount: finalAmount,
+      status: 'received', // Set the status to "received" by default
+      final_amount: totalAmount.toFixed(2), // Calculate and format the final amount
+      dishes: selectedDishes.map((dish) => dish.id), // Send selected dish IDs
     };
-    
-    console.log("orderData: ",orderData)
+  
     // Call the placeOrder API function to post the order data
     placeOrder(orderData)
       .then((response) => {
         console.log('Order placed successfully:', response);
-        // Display a confirmation message to the user
-        // alert(`Order placed successfully! Your Order ID: ${response.id}`);
-        
-        // Reset the state, clear selected dishes, and navigate if needed
+        // Reset the state and navigate if needed
         setCustomerName('');
         setSelectedDishes([]);
-        
-        // You can also navigate to a confirmation page if needed
         navigation.navigate('ShowOrders');
       })
       .catch((error) => {
@@ -68,18 +71,17 @@ const OrderFormScreen = ({ navigation }) => {
   const toggleDishSelection = (dish) => {
     // Check if the dish is already selected
     if (selectedDishes.some((selectedDish) => selectedDish.id === dish.id)) {
-      // If selected, remove it
+      // If selected, remove it and subtract its price from the total amount
       setSelectedDishes(selectedDishes.filter((selectedDish) => selectedDish.id !== dish.id));
+      setTotalAmount(totalAmount - dish.price);
     } else {
-      // If not selected, add it
+      // If not selected, add it and add its price to the total amount
       setSelectedDishes([...selectedDishes, dish]);
+      setTotalAmount(totalAmount + dish.price);
     }
   };
-   // Calculate the total amount based on the selected dishes
-   const totalAmount = selectedDishes.reduce(
-    (total, dish) => total + dish.price,
-    0
-  );
+
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -108,7 +110,7 @@ const OrderFormScreen = ({ navigation }) => {
         style={styles.placeOrderButton}
         onPress={handlePlaceOrder}
       >
-        <Text style={styles.buttonText}>Place Order</Text>
+        <Button title="Place Order" onPress={handlePlaceOrder} />
       </TouchableOpacity>
       <FlatList
         data={menuItems}
